@@ -19,12 +19,8 @@ use App\Http\Controllers\ProductController;
 Route::get('/', [HomeController::class, 'index']);
 
 
-Route::prefix('/product')->group(function(){
-    Route::get('/index', [ProductController::class, 'index']);
-    Route::get('/store', [ProductController::class, 'store']);
-    Route::get('/update', [ProductController::class, 'update']);
-    Route::get('/delete', [ProductController::class, 'delete']);
-});
+Route::get('product/index', [ProductController::class, 'index'])->name('product.index');
+Route::get('product/delete/{id}', [ProductController::class, 'delete'])->name('product.delete');
 
 
 
