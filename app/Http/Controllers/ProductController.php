@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -31,6 +32,25 @@ class ProductController extends Controller
         return view('product.index', compact('products'));
     }
 
+    public function create()
+    {
+        return view('product.create');
+    }
+
+    public function store(StoreProductRequest $request)
+    {
+
+        // process data
+        Product::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'description' => $request->description,
+            'category_id' => 1,
+        ]);
+
+        // return response
+        return back()->with('success', 'product added successfully!');
+    }
 
     public function delete($id){
         $product = Product::findOrFail($id);

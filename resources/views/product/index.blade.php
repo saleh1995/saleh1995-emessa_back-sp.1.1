@@ -4,6 +4,9 @@
 @section('content')
     <div class="container">
         <div class="row">
+            <div class="my-5 col-8 mx-auto">
+                <a href="{{ route('product.create') }}" class="btn btn-primary">Add product</a>
+            </div>
             <div class="col-8 mx-auto">
                 <table class="table">
                     <thead>
