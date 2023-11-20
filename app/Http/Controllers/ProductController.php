@@ -54,7 +54,8 @@ class ProductController extends Controller
         return back()->with('success', 'product added successfully!');
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $product = Product::findOrFail($id);
         
         return view('product.edit', compact('product'));
