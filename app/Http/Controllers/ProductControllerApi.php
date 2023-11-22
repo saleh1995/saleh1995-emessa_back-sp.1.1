@@ -2,16 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ProductResource;
-use App\Http\Traits\ApiResponseTrait;
+use Exception;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Http\Traits\ApiResponseTrait;
+use App\Http\Resources\ProductResource;
 
 class ProductControllerApi extends Controller
 {
     use ApiResponseTrait;
 
+    public function index()
+    {
+        $products = Product::all();
 
+        $productsResource = ProductResource::collection($products);
+
+        return $this->apiResponse($productsResource, 'all products');
+    }
+
+    public function show($id)
+    {
+        try{
+            $product = Product::findOrFail($id);
+            $productResource = ProductResource::make($product);
+            return response($productResource, 200);
+        }
+        catch(Exception $e){
+            return response('not found', 404);
+        }
+    }
 
     public function store(Request $request)
     {
