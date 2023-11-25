@@ -15,6 +15,6 @@ trait ApiResponseTrait{
     ];
 
 
-    return response($responseData, $status);
+    return response()->json($responseData, $status);
   }
 }

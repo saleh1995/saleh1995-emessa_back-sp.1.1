@@ -54,4 +54,24 @@ class ProductControllerApi extends Controller
         //return response
         return $this->apiResponse(ProductResource::make($product), 'product added successfully!', 404);
     }
+
+    public function tags($id){
+        $product = Product::with('tags')->findOrFail($id);
+
+        return response()->json($product, 200);
+    }
+
+    public function addTags(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|integer|exists:products,id',
+            'tags' => 'required|array',
+            'tags.*' => 'exists:tags,id',
+        ]);
+        // dd($request->all());
+        $product = Product::find($request->product_id);
+        $product->tags()->syncWithoutDetaching($request->tags);
+
+        return response()->json($product, 200);
+    }
 }

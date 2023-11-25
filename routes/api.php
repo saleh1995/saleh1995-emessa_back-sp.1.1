@@ -18,7 +18,10 @@ use Illuminate\Support\Facades\Route;
 
 
 
-
-Route::post('/product/store', [ProductControllerApi::class, 'store']);
-Route::get('/product/index', [ProductControllerApi::class, 'index']);
-Route::get('/product/show/{id}', [ProductControllerApi::class, 'show']);
+Route::prefix('product')->group(function () {
+  Route::post('/store', [ProductControllerApi::class, 'store']);
+  Route::get('/index', [ProductControllerApi::class, 'index']);
+  Route::get('/show/{id}', [ProductControllerApi::class, 'show']);
+  Route::get('/{id}/tags', [ProductControllerApi::class, 'tags']);
+  Route::post('/add-tags', [ProductControllerApi::class, 'addTags']);
+});
