@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductControllerApi;
 use Illuminate\Http\Request;
@@ -16,9 +17,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('login', [ApiAuthController::class, 'login']);
 
-
-Route::prefix('product')->group(function () {
+Route::prefix('product')->middleware('auth:sanctum')->group(function () {
   Route::post('/store', [ProductControllerApi::class, 'store']);
   Route::get('/index', [ProductControllerApi::class, 'index']);
   Route::get('/show/{id}', [ProductControllerApi::class, 'show']);
