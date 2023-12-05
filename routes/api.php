@@ -18,8 +18,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('login', [ApiAuthController::class, 'login']);
+Route::post('register', [ApiAuthController::class, 'register']);
+Route::post('logout', [ApiAuthController::class, 'logout'])->middleware('auth:sanctum');
 
-Route::prefix('product')->middleware('auth:sanctum')->group(function () {
+
+Route::prefix('product')->middleware(['auth:sanctum', 'test:super-admin'])->group(function () {
   Route::post('/store', [ProductControllerApi::class, 'store']);
   Route::get('/index', [ProductControllerApi::class, 'index']);
   Route::get('/show/{id}', [ProductControllerApi::class, 'show']);

@@ -1,6 +1,6 @@
 <?php
 
-use Laravel\Sanctum\Sanctum;
+use Laravel\Sanctum\Sanctum; 
 
 return [
 
@@ -63,5 +63,8 @@ return [
         'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
         'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
     ],
+
+
+    'token_prefix' => 'saleh',
 
 ];
