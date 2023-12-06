@@ -6,6 +6,8 @@ use App\Http\Requests\StoreProductRequest;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -41,13 +43,22 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        dd($request);
+        // $type = $request->file('image')->getClientOriginalExtension();
+        $name = $request->file('image')->getClientOriginalName();
+        // $mime = $request->file('image')->getMimeType();
+        // $size = $request->file('image')->getSize();
+
+        $newName =  time() . rand(1, 10000) . uniqid() . '_' . $name;
+        $databaseName = 'images/' . $newName;
+        $request->file('image')->move('images', $newName);
+        
         // process data
         Product::create([
             'name' => $request->name,
             'price' => $request->price,
             'description' => $request->description,
             'category_id' => $request->category_id,
+            'image' => $databaseName,
         ]);
 
         // return response
@@ -68,13 +79,24 @@ class ProductController extends Controller
             'name' => 'required|max:255|string',
             'price' => ['required', 'numeric'],
             'description' => ['required', 'string'],
+            'image' => 'required|image',
         ]);
 
+        // $imagePath = Storage::disk('public')->put('image', $request->file('image'));
+        
+
+
         $product = Product::findOrFail($id);
+
+        if(Storage::exists($product->image)){
+            Storage::delete($product->image);
+        };
+
         $product->update([
             'name' => $request->name,
             'price' => $request->price,
             'description' => $request->description,
+            'image' => $request->file('image')->store('images'),
         ]);
 
         return redirect()->route('product.index')->with('success', 'the product has been updated successfully!');
