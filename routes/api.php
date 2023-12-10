@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiAuthController;
+use App\Http\Controllers\CategoryControllerApi;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductControllerApi;
 use Illuminate\Http\Request;
@@ -22,10 +23,13 @@ Route::post('register', [ApiAuthController::class, 'register']);
 Route::post('logout', [ApiAuthController::class, 'logout'])->middleware('auth:sanctum');
 
 
-Route::prefix('product')->middleware(['auth:sanctum', 'test:super-admin'])->group(function () {
+Route::prefix('product')->middleware(['auth:sanctum'])->group(function () {
   Route::post('/store', [ProductControllerApi::class, 'store']);
   Route::get('/index', [ProductControllerApi::class, 'index']);
   Route::get('/show/{id}', [ProductControllerApi::class, 'show']);
   Route::get('/{id}/tags', [ProductControllerApi::class, 'tags']);
   Route::post('/add-tags', [ProductControllerApi::class, 'addTags']);
 });
+
+
+Route::apiResource('/category', CategoryControllerApi::class);

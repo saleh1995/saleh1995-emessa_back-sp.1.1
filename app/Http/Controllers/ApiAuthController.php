@@ -20,7 +20,7 @@ class ApiAuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         $requestPassword = $request->password;
-        $userPassword = $user->password;
+        $userPassword = $user->password ?? '';
         if ($user && Hash::check($requestPassword, $userPassword)) {
             $user->tokens()->delete();
             $token = $user->createToken($request->userAgent())->plainTextToken;

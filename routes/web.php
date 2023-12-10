@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
@@ -36,9 +37,11 @@ Route::get('product/index', [ProductController::class, 'index'])->name('product.
 Route::get('product/delete/{id}', [ProductController::class, 'delete'])->name('product.delete');
 Route::get('product/create', [ProductController::class, 'create'])->name('product.create');
 Route::post('product/store', [ProductController::class, 'store'])->name('product.store');
-Route::get('product/edit/{id}', [ProductController::class, 'edit'])->name('product.edit');
-Route::put('product/update/{id}', [ProductController::class, 'update'])->name('product.update');
+Route::get('product/edit/{product}', [ProductController::class, 'edit'])->name('product.edit');
+Route::put('product/update/{product}', [ProductController::class, 'update'])->name('product.update');
 
+Route::resource('category', CategoryController::class);
+Route::get('category/delete/{id}', [CategoryController::class, 'destroy'])->name('category.delete');
 
 Route::get('/test/{id}', function ($id) {
   // $user = User::create([

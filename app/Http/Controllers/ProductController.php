@@ -65,15 +65,15 @@ class ProductController extends Controller
         return back()->with('success', 'product added successfully!');
     }
 
-    public function edit($id)
+    public function edit(Product $product)
     {
-        $product = Product::findOrFail($id);
+        // $product = Product::findOrFail($id);
         
         return view('product.edit', compact('product'));
         
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Product $product)
     {
         $request->validate([
             'name' => 'required|max:255|string',
@@ -86,7 +86,7 @@ class ProductController extends Controller
         
 
 
-        $product = Product::findOrFail($id);
+        // $product = Product::findOrFail($id);
 
         if(Storage::exists($product->image)){
             Storage::delete($product->image);
