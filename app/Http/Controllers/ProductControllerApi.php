@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ProductEvent;
 use Exception;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -58,6 +59,10 @@ class ProductControllerApi extends Controller
 
         $user = Auth::user();
         Mail::to($user->email)->send(new ProductCreatedMail($user, $product));
+
+        // event(new ProductEvent($user, $product));
+
+        ProductEvent::dispatch($user, $product);
 
         //return response
         return $this->apiResponse(ProductResource::make($product), 'product added successfully!', 200);
