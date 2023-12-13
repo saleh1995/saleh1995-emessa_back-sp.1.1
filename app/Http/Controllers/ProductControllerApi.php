@@ -7,6 +7,9 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponseTrait;
 use App\Http\Resources\ProductResource;
+use App\Mail\ProductCreatedMail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class ProductControllerApi extends Controller
 {
@@ -40,6 +43,7 @@ class ProductControllerApi extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'description' => 'required|string',
+            'image' => 'required|image',
             'category_id' => 'required|exists:categories,id'
         ]);
 
@@ -49,10 +53,14 @@ class ProductControllerApi extends Controller
             'price' =>  $request->price,
             'description' => $request->description,
             'category_id' => $request->category_id,
+            'image' => $request->image->store('products', 'public'),
         ]);
 
+        $user = Auth::user();
+        Mail::to($user->email)->send(new ProductCreatedMail($user, $product));
+
         //return response
-        return $this->apiResponse(ProductResource::make($product), 'product added successfully!', 404);
+        return $this->apiResponse(ProductResource::make($product), 'product added successfully!', 200);
     }
 
     public function tags($id){
