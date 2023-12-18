@@ -10,6 +10,7 @@ use App\Http\Traits\ApiResponseTrait;
 use App\Http\Resources\ProductResource;
 use App\Jobs\CreateProductJob;
 use App\Mail\ProductCreatedMail;
+use App\Notifications\ProductCreatedNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
@@ -65,7 +66,7 @@ class ProductControllerApi extends Controller
 
         // ProductEvent::dispatch($user, $product);
 
-
+        $user->notify(new ProductCreatedNotification($product));
         CreateProductJob::dispatch($user, $product);
 
         //return response
