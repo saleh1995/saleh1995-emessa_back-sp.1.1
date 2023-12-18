@@ -8,6 +8,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponseTrait;
 use App\Http\Resources\ProductResource;
+use App\Jobs\CreateProductJob;
 use App\Mail\ProductCreatedMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -58,11 +59,14 @@ class ProductControllerApi extends Controller
         ]);
 
         $user = Auth::user();
-        Mail::to($user->email)->send(new ProductCreatedMail($user, $product));
+        
 
         // event(new ProductEvent($user, $product));
 
-        ProductEvent::dispatch($user, $product);
+        // ProductEvent::dispatch($user, $product);
+
+
+        CreateProductJob::dispatch($user, $product);
 
         //return response
         return $this->apiResponse(ProductResource::make($product), 'product added successfully!', 200);

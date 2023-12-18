@@ -8,6 +8,8 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Profile;
 use App\Models\User;
+use Illuminate\Contracts\Session\Session;
+use Illuminate\Support\Facades\App;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,13 +23,13 @@ use App\Models\User;
 */
 
 // Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/', function(){
+Route::get('/', function () {
   return 'home page';
 })->middleware(['test:super-admin', 'auth']);
 
 
 
-Route::get('/test', function(){
+Route::get('/test', function () {
   return response()->json('hello form json', 200);
 })->name('test');
 
@@ -71,3 +73,26 @@ Route::get('/test/{id}', function ($id) {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+Route::get('/translate', function () {
+  return view('translate');
+});
+
+
+Route::get('/switch', function () {
+  $lang = session('locale');
+
+  if ($lang == 'ar') {
+    $lang = 'en';
+  } else {
+    $lang = 'ar';
+  }
+
+  session()->put('locale', $lang);
+  App::setLocale($lang);
+
+  
+
+  return redirect()->back();
+})->name('switch.lang');
