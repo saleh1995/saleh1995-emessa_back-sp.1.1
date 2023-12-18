@@ -29,7 +29,7 @@ class ProductCreatedNotification extends Notification
     public function via(object $notifiable): array
     {
         
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -51,7 +51,9 @@ class ProductCreatedNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'message' => 'new product created successfully!',
+            'link' => url('product/edit/' . $this->product->id),
+            
         ];
     }
 }

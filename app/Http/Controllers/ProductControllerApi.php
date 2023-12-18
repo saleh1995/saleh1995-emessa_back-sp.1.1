@@ -67,7 +67,7 @@ class ProductControllerApi extends Controller
         // ProductEvent::dispatch($user, $product);
 
         $user->notify(new ProductCreatedNotification($product));
-        CreateProductJob::dispatch($user, $product);
+        // CreateProductJob::dispatch($user, $product);
 
         //return response
         return $this->apiResponse(ProductResource::make($product), 'product added successfully!', 200);
