@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\ProductEvent;
 use Exception;
 use App\Models\Product;
+use App\Events\ProductEvent;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponseTrait;
-use App\Http\Resources\ProductResource;
 use App\Jobs\CreateProductJob;
 use App\Mail\ProductCreatedMail;
-use App\Notifications\ProductCreatedNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Traits\ApiResponseTrait;
+use Illuminate\Support\Facades\Redis;
+use App\Http\Resources\ProductResource;
+use App\Notifications\ProductCreatedNotification;
+use Illuminate\Support\Facades\Cache;
 
 class ProductControllerApi extends Controller
 {
@@ -20,23 +22,73 @@ class ProductControllerApi extends Controller
 
     public function index()
     {
-        $products = Product::all();
 
-        $productsResource = ProductResource::collection($products);
+        $cachedProduct = Cache::get('products');
+        // $cachedProduct = Redis::get('product_' . $id);
 
-        return $this->apiResponse($productsResource, 'all products');
+
+        if (isset($cachedProduct)) {
+            $products = json_decode($cachedProduct, FALSE);
+
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'Fetched from cache',
+                'data' => $products,
+            ]);
+        } else {
+            $products = $products = Product::all();
+            // Redis::set('product_' . $id, $product);
+            Cache::forever('products', $products);
+
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'Fetched from database',
+                'data' => $products,
+            ]);
+        }
+        
+
+        // $productsResource = ProductResource::collection($products);
+
+        // return $this->apiResponse($productsResource, 'all products');
     }
 
     public function show($id)
     {
-        try{
-            $product = Product::findOrFail($id);
-            $productResource = ProductResource::make($product);
-            return response($productResource, 200);
-        }
-        catch(Exception $e){
-            return response('not found', 404);
-        }
+        // try {
+
+            // $product = Product::findOrFail($id);
+            // $productResource = ProductResource::make($product);
+            // return response($productResource, 200);
+
+            $cachedProduct = Cache::get('product_' . $id);
+            // $cachedProduct = Redis::get('product_' . $id);
+
+
+            if (isset($cachedProduct)) {
+                $product = json_decode($cachedProduct, FALSE);
+
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Fetched from redis',
+                    'data' => $product,
+                ]);
+            } else {
+                $product = Product::find($id);
+                // Redis::set('product_' . $id, $product);
+                Cache::put('product_' . $id, $product, 30);
+
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Fetched from database',
+                    'data' => $product,
+                ]);
+            }
+
+            
+        // } catch (Exception $e) {
+        //     return response('not found', 404);
+        // }
     }
 
     public function store(Request $request)
@@ -60,7 +112,7 @@ class ProductControllerApi extends Controller
         ]);
 
         $user = Auth::user();
-        
+
 
         // event(new ProductEvent($user, $product));
 
@@ -73,7 +125,8 @@ class ProductControllerApi extends Controller
         return $this->apiResponse(ProductResource::make($product), 'product added successfully!', 200);
     }
 
-    public function tags($id){
+    public function tags($id)
+    {
         $product = Product::with('tags')->findOrFail($id);
 
         return response()->json($product, 200);
