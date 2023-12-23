@@ -61,8 +61,8 @@ class ProductControllerApi extends Controller
             // $productResource = ProductResource::make($product);
             // return response($productResource, 200);
 
-            $cachedProduct = Cache::get('product_' . $id);
-            // $cachedProduct = Redis::get('product_' . $id);
+            // $cachedProduct = Cache::get('product_' . $id);
+            $cachedProduct = Redis::get('product_' . $id);
 
 
             if (isset($cachedProduct)) {
@@ -75,8 +75,8 @@ class ProductControllerApi extends Controller
                 ]);
             } else {
                 $product = Product::find($id);
-                // Redis::set('product_' . $id, $product);
-                Cache::put('product_' . $id, $product, 30);
+                Redis::set('product_' . $id, $product);
+                // Cache::put('product_' . $id, $product, 30);
 
                 return response()->json([
                     'status_code' => 200,
